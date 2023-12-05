@@ -1,48 +1,56 @@
 "use client";
-import Input from "@/components/Input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { useState } from "react";
+
+import Image from "next/image";
+import Input from "@/components/iu/Input";
+import Button from "@/components/iu/Button";
+
 const formSchema = z.object({
-  email: z.string({
-    required_error: "email is required",
-  }).nonempty("The email is required").email("invalid email"),
+  email: z
+    .string({
+      required_error: "email is required",
+    })
+    .nonempty("The email is required")
+    .email("invalid email"),
   password: z.string().min(8, "The password must have at least 8 characters"),
 });
 
 interface SignInData {
-  email:string,
-  password:string,
-  token?:string
+  email: string;
+  password: string;
+  token?: string;
 }
 
 const Home = () => {
-
-  const [session,setSession] = useState<SignInData>()
+  const router = useRouter();
+  const [session, setSession] = useState<SignInData>();
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    reValidateMode:"onBlur",
-    mode:"all"
+    reValidateMode: "onBlur",
+    mode: "all",
   });
 
-  const handleFormSubmit = async (data:SignInData) => {
-    const auth = await fetch('http://localhost:3005/auth',{
-      method:"POST",
-      headers:{
-        "content-type":"application/json"
+  const handleFormSubmit = async (data: SignInData) => {
+    const auth = await fetch("http://localhost:3005/auth", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
       },
-      body:JSON.stringify(data)
-    }).then((res) => res.json())
+      body: JSON.stringify(data),
+    }).then((res) => res.json());
 
-    setSession(auth)
+    setSession(auth);
 
-  }
+    if (session) router.push("/dashboard");
+  };
 
   return (
     <main
@@ -75,12 +83,9 @@ const Home = () => {
           errorAlert={errors?.password?.message}
         />
 
-        <button
-          className="bg-tomato text-mozzarella p-3 rounded-md w-full font-semibold text-xl"
-          type="submit"
-        >
-          Sign In
-        </button>
+        {session && <p className="text-tomato">E-mail/password incorret</p>}
+
+        <Button type="submit" className="hover:bg-red-500 duration-200">Sign In</Button>
       </form>
     </main>
   );
