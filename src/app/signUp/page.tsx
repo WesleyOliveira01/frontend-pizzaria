@@ -1,16 +1,19 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
 import Button from "@/components/iu/Button";
 import Input from "@/components/iu/Input";
-import { useAuthContext } from "@/contexts/AuthContext";
-import { SignInData } from "@/interfaces/Iauth";
 import Image from "next/image";
-import Link from "next/link";
+import { SignUpData } from "@/interfaces/Iauth";
 
 const formSchema = z.object({
+  name: z
+    .string({ invalid_type_error: "o nome deve ser um texto" })
+    .min(2, { message: "insira um nome valido" }),
   email: z
     .string({
       required_error: "O e-mail é obrigatorio",
@@ -19,7 +22,11 @@ const formSchema = z.object({
   password: z.string().min(8, "A senha deve ter pelo menos 8 digitos"),
 });
 
-const Home = () => {
+
+
+const SignUp = () => {
+  const router = useRouter();
+  const [user, setUser] = useState<SignUpData>();
   const {
     register,
     handleSubmit,
@@ -30,16 +37,20 @@ const Home = () => {
     mode: "all",
   });
 
-  const error = false
+  const handleFormSubmit = async (data: SignUpData) => {
+    const auth = await fetch("http://localhost:3005/newUser", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify(data),
+    }).then((res) => res.json());
 
-  const { signIn } = useAuthContext();
+    console.log(auth)
 
-  const handleFormSubmit = async (data: SignInData) => {
-    try {
-      await signIn({...data})
-    } catch (error) {
-        error = true
-    }
+    setUser(auth);
+
+    if (auth) router.push("/");
   };
 
   return (
@@ -59,6 +70,13 @@ const Home = () => {
         onSubmit={handleSubmit(handleFormSubmit)}
       >
         <Input
+          {...register("name")}
+          name="name"
+          type="text"
+          title="Nome"
+          errorAlert={errors?.name?.message}
+        />
+        <Input
           {...register("email")}
           name="email"
           type="email"
@@ -74,19 +92,11 @@ const Home = () => {
         />
 
         <Button type="submit" className="hover:bg-red-500 duration-200">
-          Entrar
+          Cadastrar
         </Button>
       </form>
-
-      <Link href="/signUp">
-        <p className="text-center text-crust font-semibold">
-          Não possui uma conta? Cadastre-se
-        </p>
-      </Link>
-
-      {error && <p className="text-center text-red-500">Usuário ou senha inválidos</p>}
     </main>
   );
 };
 
-export default Home;
+export default SignUp;
