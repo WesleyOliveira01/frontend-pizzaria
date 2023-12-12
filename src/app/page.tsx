@@ -1,12 +1,12 @@
 "use client";
+import { useAuthContext } from "@/contexts/AuthContext";
+import { SignInData } from "@/interfaces/Iauth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
 import Button from "@/components/iu/Button";
 import Input from "@/components/iu/Input";
-import { useAuthContext } from "@/contexts/AuthContext";
-import { SignInData } from "@/interfaces/Iauth";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -30,16 +30,10 @@ const Home = () => {
     mode: "all",
   });
 
-  const error = false
-
-  const { signIn } = useAuthContext();
+  const { signIn, error } = useAuthContext();
 
   const handleFormSubmit = async (data: SignInData) => {
-    try {
-      await signIn({...data})
-    } catch (error) {
-        error = true
-    }
+    await signIn({ ...data });
   };
 
   return (
@@ -72,6 +66,9 @@ const Home = () => {
           title="senha"
           errorAlert={errors?.password?.message}
         />
+        {error && (
+          <p className="text-center text-red-500">Usuário ou senha inválidos</p>
+        )}
 
         <Button type="submit" className="hover:bg-red-500 duration-200">
           Entrar
@@ -83,8 +80,6 @@ const Home = () => {
           Não possui uma conta? Cadastre-se
         </p>
       </Link>
-
-      {error && <p className="text-center text-red-500">Usuário ou senha inválidos</p>}
     </main>
   );
 };

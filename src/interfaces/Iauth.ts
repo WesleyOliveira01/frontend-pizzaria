@@ -20,6 +20,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   signIn({email,password}:SignInData): Promise<void>;
   user:UserData
+  error:boolean
 }
 
 

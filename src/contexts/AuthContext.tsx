@@ -1,17 +1,17 @@
-"use client"
+"use client";
 import { AuthContextType, SignInData, UserData } from "@/interfaces/Iauth";
+import { useRouter } from "next/navigation";
 import { setCookie } from "nookies";
 import { ReactNode, createContext, useContext, useState } from "react";
-import { useRouter } from "next/navigation";
 
 const AuthContext = createContext({} as AuthContextType);
 
 export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<UserData | null>(null);
-
+  const [error, setError] = useState<boolean>(false);
   const isAuthenticated = !!user;
-  const router = useRouter()
 
+  const router = useRouter()
 
   const signIn = async ({ email, password }: SignInData) => {
     const res = await fetch("http://localhost:3005/auth", {
@@ -22,7 +22,17 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
       body: JSON.stringify({ email, password }),
     });
 
+    if(!res.ok){
+      setError(!error)
+      console.log(error)
+      return
+    }
     const data = await res.json();
+
+    if (data.token === undefined) {
+      return;
+    }
+
 
     setCookie(undefined, "token", data.token, { maxAge: 60 * 60 * 1 });
 
@@ -32,7 +42,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, signIn, user }}>
+    <AuthContext.Provider value={{ isAuthenticated, signIn, user,error }}>
       {children}
     </AuthContext.Provider>
   );
