@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@heroicons/react": "^2.0.18",
     "@hookform/resolvers": "^3.3.2",
     "@types/jsonwebtoken": "^9.0.5",
     "jsonwebtoken": "^9.0.2",
