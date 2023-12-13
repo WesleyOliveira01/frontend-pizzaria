@@ -1,3 +1,5 @@
+import { Dispatch, SetStateAction } from "react";
+
 interface SignInData {
   email: string;
   password: string;
@@ -21,6 +23,8 @@ interface AuthContextType {
   signIn({email,password}:SignInData): Promise<void>;
   user:UserData
   error:boolean
+  loading:boolean
+  setLoading:Dispatch<SetStateAction<boolean>>
 }
 
 

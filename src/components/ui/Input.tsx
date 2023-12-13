@@ -17,7 +17,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         <label className="text-tomato font-semibold text-xl" htmlFor={name}>{title}</label>
         <input
           className={twMerge(
-            "outline-none p-2 shadow-md rounded-md",
+            "outline-none p-2 shadow-md rounded-md border-none focus:ring-0",
             className
           )}
           name={name}

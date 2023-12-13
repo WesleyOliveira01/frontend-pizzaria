@@ -2,7 +2,7 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { destroyCookie } from "nookies";
-import Button from "./iu/Button";
+import Button from "./ui/Button";
 
 const Header = () => {
   const router = useRouter();

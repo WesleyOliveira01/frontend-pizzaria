@@ -9,6 +9,7 @@ const AuthContext = createContext({} as AuthContextType);
 export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<UserData | null>(null);
   const [error, setError] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false)
   const isAuthenticated = !!user;
 
   const router = useRouter()
@@ -37,12 +38,12 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
     setCookie(undefined, "token", data.token, { maxAge: 60 * 60 * 1 });
 
     setUser({ ...data });
-
+    setLoading(!loading)
     router.push('/dashboard')
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, signIn, user,error }}>
+    <AuthContext.Provider value={{ isAuthenticated, signIn, user,error,loading,setLoading }}>
       {children}
     </AuthContext.Provider>
   );
